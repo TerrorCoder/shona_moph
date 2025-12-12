@@ -173,16 +173,16 @@ def select_best_class(prefix, stem, candidates):
     
     # Special handling for "mu" prefix
     if prefix == "mu":
-        # Check for person stems
-        if any(stem_lower.startswith(s) or stem_lower == s for s in PERSON_STEMS):
-            return next(c for c in candidates if c["class"] == "1")
-        
-        # Class 18 locatives: mu + [location noun]
+        # Class 18 locatives first
         if any(stem_lower.startswith(s) or stem_lower == s for s in LOCATIVE_STEMS):
             for c in candidates:
                 if c["class"] == "18":
                     return c
-            
+        
+        # Check for person stems
+        if any(stem_lower.startswith(s) or stem_lower == s for s in PERSON_STEMS):
+            return next(c for c in candidates if c["class"] == "1")
+        
         # Check for tree stems
         if any(stem_lower.startswith(s) or stem_lower == s for s in TREE_STEMS + BODY_PART_STEMS):
             return next(c for c in candidates if c["class"] == "3")
@@ -288,7 +288,7 @@ with st.sidebar:
 tab1, tab2 = st.tabs(["Analyze Word", "Analysis History"])
 
 with tab1:
-    word_input = st.text_input("Enter a Shona Word:", value="munhu")
+    word_input = st.text_input("Enter a Shona Word in lowercase:", value="munhu")
 
     if st.button("🔍 Deep Analysis", type="primary"):
         if word_input:
@@ -321,6 +321,10 @@ with tab1:
                     st.write(f"**Lemma:** {lemma}")
                     if best_candidate.get("plural"):
                         st.write(f"**Plural Form:** {best_candidate['plural']}{stem}")
+                    elif best_candidate["class"] == "18":
+                        if stem == "munda":
+                            st.write(f"**Plural Form:** muminda")
+                        # Add other locative plural rules as needed
 
                 # Save to history
                 add_to_history(word_input, prefix, stem, full_split, best_candidate['class'], best_candidate['meaning'])
