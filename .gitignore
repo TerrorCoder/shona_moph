@@ -27,3 +27,7 @@ Thumbs.db
 # Model checkpoints (if you have training checkpoints)
 *.ckpt
 logs/
+
+# .gitignore
+.streamlit/secrets.toml
+*.json
